@@ -28,6 +28,7 @@ import com.facebook.presto.hive.HiveClientConfig;
 import com.facebook.presto.hive.HiveCoercionPolicy;
 import com.facebook.presto.hive.HiveColumnConverterProvider;
 import com.facebook.presto.hive.HiveColumnHandle;
+import com.facebook.presto.hive.HiveCommonClientConfig;
 import com.facebook.presto.hive.HiveEncryptionInformationProvider;
 import com.facebook.presto.hive.HiveFileRenamer;
 import com.facebook.presto.hive.HiveHdfsConfiguration;
@@ -176,8 +177,10 @@ public class S3SelectTestHelper
                 new HivePartitionStats(),
                 new HiveFileRenamer(),
                 columnConverterProvider,
-                new QuickStatsProvider(hdfsEnvironment, DO_NOTHING_DIRECTORY_LISTER, new HiveClientConfig(), new NamenodeStats(), ImmutableList.of()),
-                new HiveTableWritabilityChecker(config));
+                new QuickStatsProvider(metastoreClient, hdfsEnvironment, DO_NOTHING_DIRECTORY_LISTER, new HiveClientConfig(), new NamenodeStats(), ImmutableList.of()),
+                new HiveTableWritabilityChecker(config),
+                new HiveCommonClientConfig());
+
         transactionManager = new HiveTransactionManager();
         splitManager = new HiveSplitManager(
                 transactionManager,

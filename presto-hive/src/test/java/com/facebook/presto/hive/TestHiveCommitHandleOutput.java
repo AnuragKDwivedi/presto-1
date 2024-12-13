@@ -81,6 +81,7 @@ public class TestHiveCommitHandleOutput
 {
     private static final String TEST_SCHEMA = "test_schema";
     private static final String TEST_TABLE = "test_table";
+    private static final String TEST_CATALOG_NAME = "hive";
 
     private static final Map<String, Object> testTableProperties;
     private static ConnectorTableMetadata testTableMetadata;
@@ -221,7 +222,7 @@ public class TestHiveCommitHandleOutput
 
         assertEquals(handle.getSerializedCommitOutputForRead(new SchemaTableName(TEST_SCHEMA, TEST_TABLE)), "");
         assertFalse(handle.getSerializedCommitOutputForWrite(new SchemaTableName(TEST_SCHEMA, TEST_TABLE)).isEmpty());
-        assertTrue(handle.getSerializedCommitOutputForWrite(new SchemaTableName(TEST_SCHEMA, TEST_TABLE)).equals(serializedCommitOutput));
+        assertEquals(handle.getSerializedCommitOutputForWrite(new SchemaTableName(TEST_SCHEMA, TEST_TABLE)), serializedCommitOutput);
     }
 
     private HiveMetadata getHiveMetadata(TestingExtendedHiveMetastore metastore, HiveClientConfig hiveClientConfig, ListeningExecutorService listeningExecutor)
@@ -259,8 +260,9 @@ public class TestHiveCommitHandleOutput
                 new HivePartitionStats(),
                 new HiveFileRenamer(),
                 HiveColumnConverterProvider.DEFAULT_COLUMN_CONVERTER_PROVIDER,
-                new QuickStatsProvider(HDFS_ENVIRONMENT, DO_NOTHING_DIRECTORY_LISTER, new HiveClientConfig(), new NamenodeStats(), ImmutableList.of()),
-                new HiveTableWritabilityChecker(false));
+                new QuickStatsProvider(metastore, HDFS_ENVIRONMENT, DO_NOTHING_DIRECTORY_LISTER, new HiveClientConfig(), new NamenodeStats(), ImmutableList.of()),
+                new HiveTableWritabilityChecker(false), TEST_CATALOG_NAME);
+
         return hiveMetadataFactory.get();
     }
 
